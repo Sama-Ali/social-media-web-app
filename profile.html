@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkY - Profile</title>
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script src="./node_modules/axios/dist/axios.min.js"></script>
+    <style>
+        :root {
+            --secondary-color: #ffbd97;
+            --primary-color: #e35e00;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+        }
+
+        .orangeBorder {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .orangeBorder:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .orange {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .orange:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        /*  responsive add post button */
+        .addPostButton {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            border-radius: 50%;
+            width: clamp(3rem, 5vw, 5rem);
+            height: clamp(3rem, 5vw, 5rem);
+            font-size: clamp(1rem, 2vw, 1.8rem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        /* ============================== Loading ============================== */
+
+        .lds-ring,
+        .lds-ring div {
+            box-sizing: border-box;
+        }
+
+        .lds-ring {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .lds-ring div {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            margin: 8px;
+            border: 8px solid var(--primary-color);
+            border-radius: 50%;
+            animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-color: var(--primary-color) transparent transparent transparent;
+        }
+
+        .lds-ring div:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+
+        .lds-ring div:nth-child(2) {
+            animation-delay: -0.3s;
+        }
+
+        .lds-ring div:nth-child(3) {
+            animation-delay: -0.15s;
+        }
+
+        @keyframes lds-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ============================== //Loading// ============================== */
+    </style>
+</head>
+
+<body id="body">
+    <!-- ============================== Navbar ============================== -->
+    <div class="container">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary shadow">
+            <div class="container-fluid">
+                <a class="navbar-brand fs-3 fw-bold" href="#" style="color: var(--primary-color);">SkY</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="profile.html" id="profileLink">profile</a>
+                        </li>
+                    </ul>
+
+                    <div id="loginAndSignup">
+                        <a class="btn btn-outline-danger orangeBorder mx-2" type="button" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">Login</a>
+                        <button class=" btn btn-outline-danger orangeBorder" type="button" data-bs-toggle="modal"
+                            data-bs-target="#signupModal">Signup</button>
+                    </div>
+                    <div id="logoutGroup">
+                        <img src="/assessts/images/profile.png" alt="accountPic" width="30" height="30" id="accountPic"
+                            class="rounded-circle">
+                        <b class="card-title mx-2 my-1" id="accountName">username</b>
+                        <button class="btn btn-outline-danger mx-2" type="button" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!-- ============================== //Navbar// ============================== -->
+
+    <!-- ============================== Profile Info ============================== -->
+    <div class="container" id="profileInfoContainer">
+        <div class="row mt-5  mx-auto">
+            <div class="card shadow">
+                <div class="card-body text-center" id="profileInfo">
+                    <!-- <img src="./assessts/images/profile.png" alt="Profile Picture" id="profilePic"
+                        class="rounded-circle mb-3" style="width: 150px; height: 150px;"
+                        onerror="this.src='./assessts/images/profile.png'">
+                    <h4 id="profileName">name</h4>
+                    <p id="profileUsername" class="text-muted">@username</p>
+                    <p id="profileEmail" class="text-muted">email@example.com</p>
+                    <p id="postsCount" class="mb-0">Posts: 0</p>
+                    <p id="commentsCount" class="mb-0">Comments: 0</p> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================== //Profile Info// ============================== -->
+
+    <!-- ============================== User Posts ============================== -->
+    <div class=" container" id="userPosts">
+        <div class="mt-5">
+            <div class="row ">
+                <div class="card shadow-sm my-3">
+                    <!-- ============================== Post Header ============================== -->
+                    <div class="card-header d-flex align-items-center my-2">
+                        <img src="${profileImages}" class="img-fluid rounded-circle mx-3"
+                            onerror="this.src='./assessts/images/profile.png'" style="height: 40px;width: 40px;"
+                            alt="accountPic"">
+                    <b class=" card-title">${author.username}</b>
+                        ${editPostButton}
+                    </div>
+                    <!-- ============================== //Post Header// ============================== -->
+                    <!-- ============================== Post Body ============================== -->
+                    <div class="card-body">
+                        <div class="row ">
+                            <img src='${image}' class="img-fluid" style="height: 30rem;" alt="No image posted">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p class="text-muted">${created_at}</p>
+                                <h5 class="card-title">${title}</h5>
+                                <p class="card-text">${body}</p>
+                                <a class="btn  mx-2" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#commentsModal">💬
+                                    comments</a>
+                                ${tagsContent}
+                            </div>
+                        </div>
+                        <!-- ============================== //Post Body// ============================== -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================== //userPost// ============================== -->
+    </div>
+    <!-- ============================== //User Posts// ============================== -->
+
+    <!-- ============================== Add Post button ============================== -->
+    <button class="btn addPostButton orange" type="button" id="addPostButton" onclick="addPost()">+</button>
+    <!-- ============================== //Add Post button// ============================== -->
+
+    <!-- ============================== Login Modal ============================== -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="loginModalLabel">Login</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="loginUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="loginUsername" aria-describedby="usernameHelp"
+                                value="yarob">
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" value="123456">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="login()" href="#"
+                        style="background-color: var(--primary-color) !important; border-color: var(--primary-color) !important;">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================== //Login Modal// ============================== -->
+
+    <!-- ============================== Signup Modal ============================== -->
+    <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="signupModalLabel">Signup</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="signupName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="signupName" aria-describedby="nameHelp">
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="signupEmail" aria-describedby="emailHelp">
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="signupUsername" aria-describedby="usernameHelp">
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signupPassword" value="123456">
+                        </div>
+                        <div class="mb-3">
+                            <label for="profile_image" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="profile_image" aria-describedby="imageHelp">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="signup()" href="#"
+                        style="background-color: var(--primary-color) !important; border-color: var(--primary-color) !important;">Signup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================== //Signup Modal// ============================== -->
+
+    <!-- ============================== Post Modal ============================== -->
+    <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="postModalLabel">Add new post</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="postTitle" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="postTitle" aria-describedby="titleHelp">
+                        </div>
+                        <div class="mb-3">
+                            <label for="postDescription" class="form-label">Description</label>
+                            <textarea type="text" class="form-control" id="postDescription"
+                                aria-describedby="descriptionHelp"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="postImage" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="postImage" aria-describedby="imageHelp">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="addOrEditPost()"
+                        style="background-color: var(--primary-color) !important; border-color: var(--primary-color) !important;"
+                        id="postButton">Post</button>
+                    <input type="hidden" name="postId" id="postId" value="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================== //Post Modal// ============================== -->
+
+    <!-- ============================== Comments Modal ============================== -->
+    <div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="commentsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="commentsModalLabel">Comments on (Author) post</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Comments will be here -->
+                    <div class="comment mb-3 p-3 border rounded" id="commentsList">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="${comments.author.profile_image}" class="rounded-circle me-2"
+                                style="width: 40px; height: 40px;" onerror="this.src='./assessts/images/profile.png'"
+                                alt="Profile picture">
+                            <div>
+                                <strong>username</strong>
+                                <small class="text-muted ms-2">created_at</small>
+                            </div>
+                        </div>
+                        <p class="mb-0">comment.body</p>
+                    </div>
+
+                    <!-- Add comment form -->
+                    <div class="mt-4">
+                        <h5>Add a Comment</h5>
+                        <form id="addCommentForm" class="mt-3">
+                            <div class="mb-3">
+                                <textarea class="form-control" id="commentBody" rows="3"
+                                    placeholder="Write your comment..."></textarea>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="addComment()"
+                                style="background-color: var(--primary-color) !important; border-color: var(--primary-color) !important;">
+                                Add Comment
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================== //Comments Modal// ============================== -->
+
+    <!-- ============================== Alerts ============================== -->
+    <div class="position-fixed bottom-0 end-0 p-3 fade show" style="z-index: 11">
+        <div id="liveAlertPlaceholder"></div>
+    </div>
+    <!-- ============================== //Alerts// ============================== -->
+
+    <!-- ============================== Loading ============================== -->
+    <div id="loading" class="d-flex justify-content-center align-items-center" style="z-index: 1000;">
+        <div class="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <!-- ============================== //Loading// ============================== -->
+</body>
+<script src="./script.js"></script>
+<script>
+    getProfile();
+    getPosts();
+    switchUI();
+
+    // ============================== getId ==============================
+    function getId() {
+        const id = new URLSearchParams(window.location.search).get("id");
+        return id;
+    }
+    // ============================== //getId// ==============================
+
+    function getProfile() {
+        const id = getId();
+        if (id == null) {
+            return;
+        } else {
+            axios
+                .get(`${baseURL}/users/${id}`)
+                .then((res) => {
+                    const user = res.data.data;
+                    let profileInfoContent = `
+                <img src="${user.profile_image}" class="rounded-circle mb-3" style="width: 150px; height: 150px;"
+                onerror="this.src='./assessts/images/profile.png'">
+                <h4 id="profileName">${user.name}</h4>
+                <p id="profileUsername" class="text-muted">${user.username}</p>
+                <p id="profileEmail" class="text-muted">${user.email}</p>
+                <p id="postsCount" class="mb-0">Posts: ${user.posts_count}</p>
+                <p id="commentsCount" class="mb-0">Comments: ${user.comments_count}</p>
+                `;
+                    document.getElementById("profileInfo").innerHTML = profileInfoContent;
+                })
+                .catch((err) => {
+                    console.log("error getting profile");
+                    console.log(err.response.data.message);
+                });
+        }
+    }
+
+    function getPosts() {
+        const id = getId();
+        if (id == null) {
+            document.getElementById("profileInfoContainer").style.display = "none";
+            document.getElementById("userPosts").innerHTML = `
+            <div class="mt-5">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title mb-3">Please Log In</h5>
+                        <p class="card-text">Log in to view profile and posts</p>
+                        <button class="btn orange" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+            `;
+        } else {
+            document.getElementById("userPosts").innerHTML = '';
+            axios
+                .get(`${baseURL}/users/${id}/posts`)
+                .then((res) => {
+                    toggleLoading(false);
+                    const posts = res.data.data.reverse();
+                    for (post of posts) {
+                        let author = post.author;
+                        let profileImages = author.profile_image;
+                        let image = post.image;
+                        let created_at = post.created_at;
+                        let title = post.title;
+                        let body = post.body;
+                        let comments_count = post.comments_count;
+                        let user = JSON.parse(localStorage.getItem("user"));
+                        let editPostButton = "";
+                        if (user != null && user != "") {
+                            let isOwner =
+                                user.id == post.author.id && user.id != null && user.id != "";
+                            // console.log("isOwner:", isOwner);
+                            editPostButton = isOwner
+                                ? `<div id="editPostButton" class="ms-auto">
+                <button class="btn " type="button" onclick="editPost('${encodeURIComponent(
+                                    JSON.stringify(post)
+                                )}')"
+                  style="font-size: 1.8rem;">✍️</button>
+                  <button class="btn " type="button" onclick="deletePost(${post.id
+                                })"
+                  style="font-size: 1.8rem;">🗑️</button>
+            </div>`
+                                : ` `;
+                        }
+                        // Handle tags with error checking
+                        let tagsContent = "";
+                        if (post.tags && Array.isArray(post.tags) && post.tags.length > 0) {
+                            for (let tag of post.tags) {
+                                if (tag) {
+                                    // Check if tag is not null/undefined
+                                    tagsContent += `<p class="btn orange mx-2 my-0 orange" style="border-radius: 40px;">${tag.name}</p>`;
+                                }
+                            }
+                        } else {
+                            tagsContent = `<p class="btn orange mx-2 my-0 orange" style="border-radius: 40px;">No tags</p>
+`;
+                        }
+
+                        let content = `
+            <div class="card shadow-sm my-3">
+                    <!-- ============================== Post Header ============================== -->
+                    <div class="card-header d-flex align-items-center my-2">
+                        <img src="${profileImages}" class="img-fluid rounded-circle mx-3"
+                            onerror="this.src='./assessts/images/profile.png'"
+                            style="height: 40px;width: 40px;" alt="accountPic"">
+                        <b class="card-title">${author.username}</b>
+                        ${editPostButton}
+                    </div>
+                    <!-- ============================== //Post Header// ============================== -->
+                    <!-- ============================== Post Body ============================== -->
+                    <div class="card-body">
+                        <div class="row ">
+                            <img src='${image}' class="img-fluid" style="height: 30rem;" alt="No image posted">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p class="text-muted">${created_at}</p>
+                                <h5 class="card-title">${title}</h5>
+                                <p class="card-text">${body}</p>
+                                <a class="btn  mx-2" type="button" data-bs-toggle="modal"
+                            data-bs-target="#commentsModal" onclick="showComments(${post.id})">💬 ${comments_count} comments</a>
+                                ${tagsContent}
+                            </div>
+                        </div>
+                        <!-- ============================== //Post Body// ============================== -->
+                    </div>
+                </div>`;
+                        document.getElementById("userPosts").innerHTML += content;
+                    }
+                })
+                .catch((err) => {
+                    console.log("error getting posts");
+                    console.log(err);
+                });
+        }
+    }
+</script>
+
+</html>
