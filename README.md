@@ -9,14 +9,14 @@ A front-end social media web application built using HTML, CSS, JavaScript, and 
 📱 Responsive design using Bootstrap.
 🔒 Token-based API authentication.
 
-🛠️ Technologies Used
+🛠️ Technologies Used:
 HTML5.
 CSS3.
 JavaScript (ES6).
 Bootstrap 5.
 Tarmeez Academy REST API.
 
-📁 Getting Started
+📁 Getting Started:
 1- Clone the repository: https://github.com/Sama-Ali/social-media-web-app
 2- Open index.html in your browser.
 
